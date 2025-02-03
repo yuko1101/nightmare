@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "nightmare",
+  "version": "${version}",
+  "name": "Nightmare",
+  "description": "A fabric/neoforge mod for improving difficulties.",
+  "authors": [
+    "yuko1101"
+  ],
+  "contact": {
+    "homepage": "https://github.com/yuko1101/nightmare"
+  },
+  "license": "MIT",
+  "icon": "assets/nightmare/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.github.yuko1101.nightmare.fabric.NightmareFabric"
+    ]
+  },
+  "mixins": [
+    "nightmare.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "minecraft": "~1.21.4",
+    "java": ">=21"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

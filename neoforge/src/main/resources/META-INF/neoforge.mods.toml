@@ -1,0 +1,32 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "nightmare"
+version = "${version}"
+displayName = "Nightmare"
+authors = "yuko1101"
+description = '''
+A fabric/neoforge mod for improving difficulties.
+'''
+#logoFile = ""
+
+[[dependencies.nightmare]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.nightmare]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21,)"
+ordering = "NONE"
+side = "BOTH"
+
+
+[[mixins]]
+config = "nightmare.mixins.json"
