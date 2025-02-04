@@ -115,12 +115,12 @@ public class BlockBreakGoal extends BlockInteractGoal {
         return Objects.requireNonNull(path.getEnd()).getPos().distanceTo(target.getPos()) > 2.0;
     }
 
-    // https://minecraft.wiki/w/Breaking#Calculation, but with big modifications for enemies
+    // PlayerEntity#getDestroySpeed, but with big modifications for enemies
     private double getProgressSpeed() {
         ItemStack itemStack = this.mob.getMainHandStack();
 
         double speed = itemStack.getMiningSpeedMultiplier(getBlockState());
-        if (speed > 1) speed *= this.mob.getAttributes().hasAttribute(EntityAttributes.MINING_EFFICIENCY) ? this.mob.getAttributeValue(EntityAttributes.MINING_EFFICIENCY) : 1;
+        if (speed > 1) speed += this.mob.getAttributes().hasAttribute(EntityAttributes.MINING_EFFICIENCY) ? this.mob.getAttributeValue(EntityAttributes.MINING_EFFICIENCY) : 0;
         speed *= this.mob.getAttributes().hasAttribute(EntityAttributes.BLOCK_BREAK_SPEED) ? this.mob.getAttributeValue(EntityAttributes.BLOCK_BREAK_SPEED) : 1;
 
         // speed up if the monster has a suitable tool, since a monster usually doesn't have a tool
