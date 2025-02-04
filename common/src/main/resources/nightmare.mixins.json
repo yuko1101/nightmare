@@ -6,6 +6,9 @@
   "client": [
   ],
   "mixins": [
+    "AbstractSkeletonEntityMixin",
+    "PillagerEntityMixin",
+    "VindicatorEntityMixin",
     "ZombieEntityMixin"
   ],
   "injectors": {
