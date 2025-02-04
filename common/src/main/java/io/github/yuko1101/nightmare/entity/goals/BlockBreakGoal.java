@@ -15,18 +15,20 @@ public class BlockBreakGoal extends BlockInteractGoal {
     private static final int MIN_MAX_PROGRESS = 240;
 
     private final Predicate<Difficulty> difficultySufficientPredicate;
+    private final Predicate<MobEntity> mobEntityPredicate;
 
     protected int breakProgress;
     protected int prevBreakProgress = -1;
     protected int maxProgress = -1;
 
-    public BlockBreakGoal(MobEntity mob, Predicate<Difficulty> difficultySufficientPredicate, Predicate<BlockPos> blockPosPredicate) {
+    public BlockBreakGoal(MobEntity mob, Predicate<Difficulty> difficultySufficientPredicate, Predicate<BlockPos> blockPosPredicate, Predicate<MobEntity> canStartPredicate) {
         super(mob, blockPosPredicate);
         this.difficultySufficientPredicate = difficultySufficientPredicate;
+        this.mobEntityPredicate = canStartPredicate;
     }
 
-    public BlockBreakGoal(MobEntity mob, int maxProgress, Predicate<Difficulty> difficultySufficientPredicate, Predicate<BlockPos> blockPosPredicate) {
-        this(mob, difficultySufficientPredicate, blockPosPredicate);
+    public BlockBreakGoal(MobEntity mob, int maxProgress, Predicate<Difficulty> difficultySufficientPredicate, Predicate<BlockPos> blockPosPredicate, Predicate<MobEntity> canStartPredicate) {
+        this(mob, difficultySufficientPredicate, blockPosPredicate, canStartPredicate);
         this.maxProgress = maxProgress;
     }
 
@@ -42,7 +44,7 @@ public class BlockBreakGoal extends BlockInteractGoal {
         if (!isDifficultySufficient(this.mob.getWorld().getDifficulty())) {
             return false;
         }
-        if (this.mob.getTarget() == null || this.mob.getTarget().isDead()) {
+        if (!mobEntityPredicate.test(this.mob)) {
             return false;
         }
         if (!super.canStart()) {
@@ -62,8 +64,9 @@ public class BlockBreakGoal extends BlockInteractGoal {
     public boolean shouldContinue() {
         return this.breakProgress <= this.getMaxProgress()
                 && this.mob.hurtTime == this.mob.maxHurtTime
-                && blockPosPredicate.test(this.blockPos)
-                && this.isDifficultySufficient(this.mob.getWorld().getDifficulty());
+                && this.isDifficultySufficient(this.mob.getWorld().getDifficulty())
+                && mobEntityPredicate.test(this.mob)
+                && blockPosPredicate.test(this.blockPos);
     }
 
     @Override

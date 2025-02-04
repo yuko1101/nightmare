@@ -1,9 +1,9 @@
 package io.github.yuko1101.nightmare.mixin;
 
 import io.github.yuko1101.nightmare.entity.goals.BlockBreakGoal;
+import io.github.yuko1101.nightmare.utils.EntityUtils;
 import io.github.yuko1101.nightmare.utils.Vec3dUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -25,13 +25,13 @@ public abstract class ZombieEntityMixin extends HostileEntity {
     @Inject(method = "initCustomGoals", at = @At("TAIL"))
     private void initCustomGoals(CallbackInfo ci) {
         this.goalSelector.add(1, new BlockBreakGoal((ZombieEntity) (Object) this, 240, difficulty -> difficulty == Difficulty.HARD, pos -> {
-            Block block = this.getWorld().getBlockState(pos).getBlock();
             if (!pos.isWithinDistance(this.getPos(), 4.0)) return false;
             if (this.getTarget() == null) return false;
             if (!this.getTarget().getBlockPos().isWithinDistance(this.getPos(), 8.0)) return false;
             if (Vec3dUtils.getAngle(this.getPos(), this.getTarget().getPos(), pos.toCenterPos()) > Math.PI / 2) return false;
-            return block != Blocks.AIR && block != Blocks.BEDROCK;
-        }));
+            BlockState blockState = this.getWorld().getBlockState(pos);
+            return !blockState.isAir() && blockState.getHardness(this.getWorld(), pos) < 100F; // TODO: better filtering
+        }, mobEntity -> mobEntity.getTarget() != null && mobEntity.getTarget().isAlive() && !EntityUtils.isRangedAttack(mobEntity)));
     }
 
     @ModifyArg(method = "initCustomGoals", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ai/goal/ActiveTargetGoal;<init>(Lnet/minecraft/entity/mob/MobEntity;Ljava/lang/Class;Z)V"), index = 2)
