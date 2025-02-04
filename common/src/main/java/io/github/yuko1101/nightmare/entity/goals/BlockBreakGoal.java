@@ -1,8 +1,7 @@
 package io.github.yuko1101.nightmare.entity.goals;
 
+import io.github.yuko1101.nightmare.utils.EntityUtils;
 import net.minecraft.block.Block;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
@@ -13,7 +12,7 @@ import net.minecraft.world.GameRules;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class BlockBreakGoal extends BlockInteractGoal {
+public class BlockBreakGoal extends BlockInteractGoal implements IPathCreateGoal {
     private final Predicate<Difficulty> difficultySufficientPredicate;
     private final Predicate<MobEntity> mobEntityPredicate;
 
@@ -48,7 +47,7 @@ public class BlockBreakGoal extends BlockInteractGoal {
             return false;
         }
 
-        return canNavigateOnlyByBreakingBlocks(this.mob.getTarget());
+        return EntityUtils.canNavigateOnlyByBreakingBlocks(this.mob, this.mob.getTarget());
     }
 
     @Override
@@ -100,19 +99,6 @@ public class BlockBreakGoal extends BlockInteractGoal {
 
     private boolean isDifficultySufficient(Difficulty difficulty) {
         return this.difficultySufficientPredicate.test(difficulty);
-    }
-
-    private boolean canNavigateOnlyByBreakingBlocks(LivingEntity target) {
-        Path path = this.mob.getNavigation().findPathTo(this.mob.getTarget(), 0);
-        if (path == null) {
-            return false;
-        }
-
-        if (path.getLength() == 0) {
-            return false;
-        }
-
-        return Objects.requireNonNull(path.getEnd()).getPos().distanceTo(target.getPos()) > 2.0;
     }
 
     // PlayerEntity#getDestroySpeed, but with big modifications for enemies

@@ -7,10 +7,12 @@
   ],
   "mixins": [
     "AbstractSkeletonEntityMixin",
-    "accessors.MobEntityAccessor",
+    "CreeperEntityMixin",
     "IllagerEntityMixin",
     "TrackTargetGoalMixin",
-    "ZombieEntityMixin"
+    "ZombieEntityMixin",
+    "accessors.CreeperEntityAccessor",
+    "accessors.MobEntityAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
