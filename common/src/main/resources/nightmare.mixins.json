@@ -7,8 +7,9 @@
   ],
   "mixins": [
     "AbstractSkeletonEntityMixin",
-    "PillagerEntityMixin",
-    "VindicatorEntityMixin",
+    "accessors.MobEntityAccessor",
+    "IllagerEntityMixin",
+    "TrackTargetGoalMixin",
     "ZombieEntityMixin"
   ],
   "injectors": {
