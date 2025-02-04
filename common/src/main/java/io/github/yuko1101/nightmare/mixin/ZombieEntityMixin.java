@@ -12,6 +12,7 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ZombieEntity.class)
@@ -31,5 +32,10 @@ public abstract class ZombieEntityMixin extends HostileEntity {
             if (Vec3dUtils.getAngle(this.getPos(), this.getTarget().getPos(), pos.toCenterPos()) > Math.PI / 2) return false;
             return block != Blocks.AIR && block != Blocks.BEDROCK;
         }));
+    }
+
+    @ModifyArg(method = "initCustomGoals", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ai/goal/ActiveTargetGoal;<init>(Lnet/minecraft/entity/mob/MobEntity;Ljava/lang/Class;Z)V"), index = 2)
+    private boolean modifyChecks(boolean checkVisibility) {
+        return false;
     }
 }
