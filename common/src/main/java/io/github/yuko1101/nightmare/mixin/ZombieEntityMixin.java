@@ -24,7 +24,7 @@ public abstract class ZombieEntityMixin extends HostileEntity {
 
     @Inject(method = "initCustomGoals", at = @At("TAIL"))
     private void initCustomGoals(CallbackInfo ci) {
-        this.goalSelector.add(1, new BlockBreakGoal((ZombieEntity) (Object) this, 240, difficulty -> difficulty == Difficulty.HARD, pos -> {
+        this.goalSelector.add(1, new BlockBreakGoal((ZombieEntity) (Object) this, difficulty -> difficulty == Difficulty.HARD, pos -> {
             if (!pos.isWithinDistance(this.getPos(), 4.0)) return false;
             if (this.getTarget() == null) return false;
             if (!this.getTarget().getBlockPos().isWithinDistance(this.getPos(), 8.0)) return false;

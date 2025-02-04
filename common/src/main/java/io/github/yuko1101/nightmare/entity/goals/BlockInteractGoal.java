@@ -1,18 +1,20 @@
 package io.github.yuko1101.nightmare.entity.goals;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.ai.NavigationConditions;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
 public class BlockInteractGoal extends Goal {
-    protected MobEntity mob;
+    protected final MobEntity mob;
     @Nullable
     protected BlockPos blockPos = null;
     protected Predicate<BlockPos> blockPosPredicate;
@@ -106,5 +108,13 @@ public class BlockInteractGoal extends Goal {
         } else {
             return index / 2 + 1;
         }
+    }
+
+    @Nullable
+    protected BlockState getBlockState() {
+        if (this.blockPos == null) {
+            return null;
+        }
+        return this.mob.getWorld().getBlockState(this.blockPos);
     }
 }

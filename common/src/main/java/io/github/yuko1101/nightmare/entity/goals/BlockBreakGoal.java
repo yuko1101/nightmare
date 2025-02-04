@@ -3,7 +3,9 @@ package io.github.yuko1101.nightmare.entity.goals;
 import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.Path;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
@@ -12,14 +14,11 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 public class BlockBreakGoal extends BlockInteractGoal {
-    private static final int MIN_MAX_PROGRESS = 240;
-
     private final Predicate<Difficulty> difficultySufficientPredicate;
     private final Predicate<MobEntity> mobEntityPredicate;
 
-    protected int breakProgress;
+    protected double breakProgress;
     protected int prevBreakProgress = -1;
-    protected int maxProgress = -1;
 
     public BlockBreakGoal(MobEntity mob, Predicate<Difficulty> difficultySufficientPredicate, Predicate<BlockPos> blockPosPredicate, Predicate<MobEntity> canStartPredicate) {
         super(mob, blockPosPredicate);
@@ -27,13 +26,11 @@ public class BlockBreakGoal extends BlockInteractGoal {
         this.mobEntityPredicate = canStartPredicate;
     }
 
-    public BlockBreakGoal(MobEntity mob, int maxProgress, Predicate<Difficulty> difficultySufficientPredicate, Predicate<BlockPos> blockPosPredicate, Predicate<MobEntity> canStartPredicate) {
-        this(mob, difficultySufficientPredicate, blockPosPredicate, canStartPredicate);
-        this.maxProgress = maxProgress;
-    }
-
-    private int getMaxProgress() {
-        return Math.max(this.maxProgress, MIN_MAX_PROGRESS);
+    private double getMaxProgress() {
+        if (this.blockPos == null) {
+            throw new IllegalStateException("BlockPos is null");
+        }
+        return Objects.requireNonNull(getBlockState()).getHardness(this.mob.getWorld(), this.blockPos) * 30;
     }
 
     @Override
@@ -58,6 +55,7 @@ public class BlockBreakGoal extends BlockInteractGoal {
     public void start() {
         super.start();
         this.breakProgress = 0;
+        this.prevBreakProgress = -1;
     }
 
     @Override
@@ -85,7 +83,7 @@ public class BlockBreakGoal extends BlockInteractGoal {
             }
         }
 
-        this.breakProgress++;
+        this.breakProgress += getProgressSpeed();
         int i = (int)((float)this.breakProgress / (float)this.getMaxProgress() * 10.0F);
         if (i != this.prevBreakProgress) {
             this.mob.getWorld().setBlockBreakingInfo(this.mob.getId(), this.blockPos, i);
@@ -115,5 +113,21 @@ public class BlockBreakGoal extends BlockInteractGoal {
         }
 
         return Objects.requireNonNull(path.getEnd()).getPos().distanceTo(target.getPos()) > 2.0;
+    }
+
+    // https://minecraft.wiki/w/Breaking#Calculation, but with big modifications for enemies
+    private double getProgressSpeed() {
+        ItemStack itemStack = this.mob.getMainHandStack();
+
+        double speed = itemStack.getMiningSpeedMultiplier(getBlockState());
+        if (speed > 1) speed *= this.mob.getAttributes().hasAttribute(EntityAttributes.MINING_EFFICIENCY) ? this.mob.getAttributeValue(EntityAttributes.MINING_EFFICIENCY) : 1;
+        speed *= this.mob.getAttributes().hasAttribute(EntityAttributes.BLOCK_BREAK_SPEED) ? this.mob.getAttributeValue(EntityAttributes.BLOCK_BREAK_SPEED) : 1;
+
+        // speed up if the monster has a suitable tool, since a monster usually doesn't have a tool
+        if (itemStack.isSuitableFor(getBlockState())) {
+            speed *= 3;
+        }
+
+        return speed;
     }
 }
