@@ -22,7 +22,7 @@ public class SelfDestructionGoal extends BlockInteractGoal implements IPathCreat
 
     @Override
     public boolean canStart() {
-        if (!getServerWorld(this.mob).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+        if (!this.mob.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
             return false;
         }
         if (this.mob.getWorld().getDifficulty() != Difficulty.HARD) {

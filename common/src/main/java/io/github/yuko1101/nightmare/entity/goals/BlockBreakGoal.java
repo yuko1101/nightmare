@@ -34,7 +34,7 @@ public class BlockBreakGoal extends BlockInteractGoal implements IPathCreateGoal
 
     @Override
     public boolean canStart() {
-        if (!getServerWorld(this.mob).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+        if (!this.mob.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
             return false;
         }
         if (!isDifficultySufficient(this.mob.getWorld().getDifficulty())) {
@@ -106,8 +106,6 @@ public class BlockBreakGoal extends BlockInteractGoal implements IPathCreateGoal
         ItemStack itemStack = this.mob.getMainHandStack();
 
         double speed = itemStack.getMiningSpeedMultiplier(getBlockState());
-        if (speed > 1) speed += this.mob.getAttributes().hasAttribute(EntityAttributes.MINING_EFFICIENCY) ? this.mob.getAttributeValue(EntityAttributes.MINING_EFFICIENCY) : 0;
-        speed *= this.mob.getAttributes().hasAttribute(EntityAttributes.BLOCK_BREAK_SPEED) ? this.mob.getAttributeValue(EntityAttributes.BLOCK_BREAK_SPEED) : 1;
 
         // speed up if the monster has a suitable tool, since a monster usually doesn't have a tool
         if (itemStack.isSuitableFor(getBlockState())) {
