@@ -13,7 +13,10 @@ public class EntityUtils {
     }
 
     public static boolean canNavigateOnlyByBreakingBlocks(MobEntity mob, LivingEntity target) {
-        Path path = mob.getNavigation().findPathTo(mob.getTarget(), 0);
+        if (target == null) {
+            return false;
+        }
+        Path path = mob.getNavigation().findPathTo(target, 0);
         if (path == null) {
             return false;
         }
